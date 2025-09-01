@@ -1,28 +1,19 @@
+# app/services/ai_client.py
+from typing import Optional, List, Dict, Any
 from openai import OpenAI
-from typing import Dict, Any, List, Optional
 
 class AIClient:
-    def __init__(self, api_key: Optional[str]):
-        if not api_key:
-            self.client = None
-        else:
-            self.client = OpenAI(api_key=api_key)
+    def __init__(self, key: Optional[str]):
+        self.available = bool(key)
+        self.client = OpenAI(api_key=key) if self.available else None
 
-    def available(self) -> bool:
-        return self.client is not None
-
-    def json_response(self, model: str, system: str, user: str, max_tokens: int = 600, temperature: float = 0.3) -> Dict[str, Any]:
-        if not self.client:
-            raise RuntimeError("OpenAI API key not configured.")
-        resp = self.client.chat.completions.create(
-            model=model,                 # 예: "gpt-4o-mini"
+    def chat(self, messages: List[Dict[str, str]], model: str = "gpt-4o-mini",
+             temperature: float = 0.2, max_tokens: int = 600):
+        if not self.available:
+            return None
+        return self.client.chat.completions.create(
+            model=model,
+            messages=messages,
             temperature=temperature,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user}
-            ],
-            max_tokens=max_tokens
+            max_tokens=max_tokens,
         )
-        content = resp.choices[0].message.content
-        return {} if not content else __import__("json").loads(content)

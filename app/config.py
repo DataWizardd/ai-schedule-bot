@@ -1,10 +1,13 @@
 import os
-from dataclasses import dataclass
+from dotenv import load_dotenv
+from pathlib import Path
 
-@dataclass
+BASE_DIR = Path(__file__).resolve().parents[1]
+load_dotenv(BASE_DIR / ".env")
+
 class Settings:
-    BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    DATABASE_PATH: str = os.getenv("DATABASE_PATH", "data/schedules.db")
+    BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+    DATABASE_PATH = os.getenv("DATABASE_PATH", str(BASE_DIR / "data/schedules.db"))
 
 settings = Settings()

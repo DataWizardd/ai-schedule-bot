@@ -1,8 +1,21 @@
+# Telegram Bot
 python-telegram-bot==21.6
-openai>=1.35.0
-pydantic>=2.7.0
+
+# OpenAI API client
+openai>=1.40.0
+
+# 환경 변수 관리
 python-dotenv>=1.0.1
-APScheduler>=3.10.4
+
+# 스케줄링
+apscheduler>=3.10.4
+
+# 한국 시간대, 날짜 처리
 pendulum>=3.0.0
-regex>=2024.5.15
-uvloop; platform_system!="Windows"
+pytz>=2025.2
+
+# 고급 정규식
+regex>=2025.8.29
+
+# 기타 유틸
+tqdm>=4.67.1

@@ -1,32 +1,33 @@
+# app/storage/db.py
 import sqlite3
 from pathlib import Path
 
 class DB:
     def __init__(self, path: str):
-        self.path = path
-        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        self.path = str(Path(path))
+        Path(self.path).parent.mkdir(parents=True, exist_ok=True)
         self._init()
 
     def _init(self):
         with sqlite3.connect(self.path) as conn:
-            c = conn.cursor()
-            c.execute("""
-            CREATE TABLE IF NOT EXISTS schedules (
+            cur = conn.cursor()
+            cur.execute("""
+            CREATE TABLE IF NOT EXISTS schedules(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                title TEXT NOT NULL,
+                user_id INTEGER,
+                title TEXT,
                 description TEXT,
-                schedule_date TEXT NOT NULL,
-                schedule_time TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                date TEXT,   -- YYYY-MM-DD
+                time TEXT    -- HH:MM or NULL
             )
             """)
-            c.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                user_id INTEGER PRIMARY KEY
+            cur.execute("""
+            CREATE TABLE IF NOT EXISTS reminders(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                schedule_id INTEGER NOT NULL,
+                offset_minutes INTEGER NOT NULL,  -- 0=정각, 30=30분 전, 60, 1440(하루 전) 등
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             """)
             conn.commit()
-
-    def conn(self):
-        return sqlite3.connect(self.path)
